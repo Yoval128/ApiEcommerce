@@ -1,0 +1,19 @@
+﻿services:
+    sql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        container_name: sql
+        ports:
+            - "1433:1433"
+        environment:
+            ACCEPT_EULA: "Y"
+            MSSQL_SA_PASSWORD: "MyStrongPassword123"
+            MSSQL_PID: "Developer"
+        volumes:
+            - sqlserverdata:/var/opt/mssql
+volumes:
+    sqlserverdata:
+#Comandos utiles:
+# Levantar el contenedor en segundo plano: 
+#   docker-compose up -d
+# Apagar y eliminar contenedores (no borra los volumenes): 
+#   docker-compose down
