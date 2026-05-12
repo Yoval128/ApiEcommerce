@@ -66,6 +66,7 @@ namespace apiEcommerce.Repository
 
         public bool UpdateCategory(Category category)
         {
+            //Sets a new creation date for the category
             category.CreationDate = DateTime.Now;
             _db.Categories.Update(category);
             return Save();
