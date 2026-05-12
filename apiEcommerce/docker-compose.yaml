@@ -1,19 +1,62 @@
-﻿services:
+﻿# Define los servicios/contenedores que Docker va a crear
+services:
+
+    # Nombre del servicio
     sql:
+
+        # Imagen que Docker descargará desde internet
         image: mcr.microsoft.com/mssql/server:2022-latest
+
+        # Nombre personalizado del contenedor
         container_name: sql
+
+        # Puertos:
         ports:
-            - "1433:1433"
+            - "1433:1433"      # 1433 es el puerto local de SQL Server
+
+        # Variables de entorno necesarias para SQL Server
         environment:
+
+            # Acepta automáticamente la licencia de Microsoft
             ACCEPT_EULA: "Y"
-            MSSQL_SA_PASSWORD: "MyStrongPassword123"
-            MSSQL_PID: "Developer"
+
+            # Contraseña del usuario administrador "sa(usuario administrador)"
+            MSSQL_SA_PASSWORD: "MyStrongPass123"
+
+            # Edición de SQL Server
+            MSSQL_PID: "Developer"         # Developer = gratuita para desarrollo
+
+        # Volúmenes:
+        # Sirven para guardar datos aunque el contenedor se elimine
         volumes:
+
+            # nombre_volumen:ruta_en_contenedor
             - sqlserverdata:/var/opt/mssql
+
+
+# Sección donde se crean los volúmenes persistentes
 volumes:
+    # Nombre del volumen
     sqlserverdata:
-#Comandos utiles:
-# Levantar el contenedor en segundo plano: 
-#   docker-compose up -d
-# Apagar y eliminar contenedores (no borra los volumenes): 
-#   docker-compose down
+
+
+# COMANDOS ÚTILES
+
+# Levanta el contenedor en segundo plano
+# docker-compose up -d
+
+# Ver contenedores activos
+# docker ps
+
+# Detener contenedores
+# docker-compose stop
+
+# Apagar y eliminar contenedores
+# (NO elimina los datos del volumen)
+# docker-compose down
+
+# Ver logs del contenedor
+# docker logs sql
+
+# Eliminar TODO incluyendo los datos
+# docker-compose down -v
