@@ -1,4 +1,7 @@
+using apiEcommerce.Repository;
+using apiEcommerce.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,9 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Get the connection string from the configuration and register the ApplicationDbContext
 // with the dependency injection container
-var dbConectionString = builder.Configuration.GetConnectionString("ConexionSql");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConectionString));
-
+var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Register the category repository with the dependency injection container
+builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping profiles from the assembly
+{
+    cfg.AddMaps(typeof(Program).Assembly);
+});
 //Controllers are added to the service collection, which allows the application to
 //handle HTTP requests and return responses
 builder.Services.AddControllers();
