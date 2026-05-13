@@ -1,15 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace apiEcommerce.Models
-{
+{ //Create the model Prodcut and relationship with model Category
     public class Product
     {
         [Required]
         public int Id { get; set; }
-        public string Name { get; set}
+        public string Name { get; set; }
         public string Description { get; set; }
 
         [Range(0, double.MaxValue)] // Ensure price is non-negative
+        [Column(TypeName = "decimal(18,2)")] // Specify precision and scale for decimal)]
         public decimal Price { get; set; }
 
         public string imgUrl { get; set; }
@@ -25,7 +27,9 @@ namespace apiEcommerce.Models
 
         //Relation with model Category
         public int CategoryId { get; set; }
-        [ForeignKey] // Specify that this is a foreign key
+        [ForeignKey("Id")] // Foreign key to Category model
+
+        public required Category Category { get; set; } // Navigation property to Category
 
     }
 }
