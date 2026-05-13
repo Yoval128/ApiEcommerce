@@ -9,6 +9,7 @@ namespace apiEcommerce.Mapping
         public CategoryProfile()
         {
             CreateMap<Category, CategoryDto>().ReverseMap();
+            //RevereMap para que también pueda mapear en ambas direcciones
 
             CreateMap<Category, CreateCategoryDto>().ReverseMap();
         }

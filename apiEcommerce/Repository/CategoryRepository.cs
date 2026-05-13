@@ -51,12 +51,12 @@ namespace apiEcommerce.Repository
         {
             //Retrieves all categories from the database, ordered by name, and returns them as a list
 
-            return _db.Categories.OrderBy(c.Name).ToList();
+            return _db.Categories.OrderBy(c => c.Name).ToList();
         }
 
-        public Category GetCategory(int id)
+        public Category? GetCategory(int id)
         {
-            return _db.Categories.FirstOrDefault(c.Id == id); ?? throw new InvalidOperationException($"La categoria con el id {id} no existe");
+            return _db.Categories.FirstOrDefault(c => c.Id == id);
         }
 
         public bool Save()

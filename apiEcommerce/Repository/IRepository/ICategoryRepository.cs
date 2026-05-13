@@ -7,7 +7,7 @@ namespace apiEcommerce.Repository.IRepository
         //<T> where T is a class
         ICollection<Category> GetCategories(); // Get list of all categories
 
-        Category GetCategory(int id); // Get a category by its ID
+        Category? GetCategory(int id); // Get a category by its ID
 
         bool CategoryExists(int id); // Check if a category exists by its ID
 
