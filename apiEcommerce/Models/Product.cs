@@ -6,9 +6,11 @@ namespace apiEcommerce.Models
     public class Product
     {
         [Required]
-        public int Id { get; set; }
+        public int ProductId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        //Fix the property Price 
 
         [Range(0, double.MaxValue)] // Ensure price is non-negative
         [Column(TypeName = "decimal(18,2)")] // Specify precision and scale for decimal)]
@@ -27,7 +29,7 @@ namespace apiEcommerce.Models
 
         //Relation with model Category
         public int CategoryId { get; set; }
-        [ForeignKey("Id")] // Foreign key to Category model
+        [ForeignKey("CategoryId")] // Foreign key to Category model
 
         public required Category Category { get; set; } // Navigation property to Category
 
