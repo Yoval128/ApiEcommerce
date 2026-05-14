@@ -15,5 +15,7 @@ public class ApplicationDbContext : DbContext
     // entities, which represents the Categories
     // table in the database.
     public DbSet<Category> Categories { get; set; }
+
+    public DbSet<Product> Products { get; set; }
 }
 
