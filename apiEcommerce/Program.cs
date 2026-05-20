@@ -12,10 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Register the category repository with the dependency injection container
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Register the product repository with the dependency injection container
+
 builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping profiles from the assembly
 {
     cfg.AddMaps(typeof(Program).Assembly);
 });
+
+
 //Controllers are added to the service collection, which allows the application to
 //handle HTTP requests and return responses
 builder.Services.AddControllers();
