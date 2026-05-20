@@ -2,7 +2,7 @@
 
 namespace apiEcommerce.Repository.IRepository
 {
-    public interface IProductReository
+    public interface IProductRepository
     {
         // Get list of all products
         ICollection<Product> GetProducts();
