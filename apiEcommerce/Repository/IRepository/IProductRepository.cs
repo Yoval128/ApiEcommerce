@@ -10,7 +10,7 @@ namespace apiEcommerce.Repository.IRepository
         ICollection<Product> GetProductForCategory(int categoryId);
 
         // Get a product by id and return all the products that been equal to that product
-        ICollection<Product> SearchProduct(string name);
+        ICollection<Product> SearchProducts(string searchTerm);
 
         //Get a id and return a product
         Product? GetProduct(int id);

@@ -106,5 +106,25 @@ namespace apiEcommerce.Controllers
             var productsDto = _mapper.Map<List<ProductDto>>(products);
             return Ok(productsDto);
         }
+
+
+        //Endpoint Get products by category id
+        [HttpGet("searchProductByNameDescription/{searchTerm}", Name = "SearchProducts")]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // Not found response if the category does not exist
+
+        public IActionResult SearchProducts(string searchTerm)
+        {
+            var products = _productRepository.SearchProducts(searchTerm);
+            if (products.Count == 0)
+            {
+                return NotFound($"El producto con el nombre '{searchTerm}' no existe");
+            }
+            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            return Ok(productsDto);
+        }
+
     }
 }
