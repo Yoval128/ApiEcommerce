@@ -89,5 +89,22 @@ namespace apiEcommerce.Controllers
             return CreatedAtRoute("GetProduct", new { productId = product.ProductId }, productoDto);
         }
 
+        //Endpoint Get products by category id
+        [HttpGet("searchProductByCategory/{categoryId:int}", Name = "GetProductsForCategory")]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // Not found response if the category does not exist
+
+        public IActionResult GetProductForCategory(int categoryId)
+        {
+            var products = _productRepository.GetProductForCategory(categoryId);
+            if (products.Count == 0)
+            {
+                return NotFound($"Los productos con la categoría {categoryId} no existen");
+            }
+            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            return Ok(productsDto);
+        }
     }
 }
