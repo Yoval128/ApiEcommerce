@@ -1,5 +1,6 @@
 ﻿using apiEcommerce.Models;
 using apiEcommerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace apiEcommerce.Repository
 {
@@ -78,7 +79,13 @@ namespace apiEcommerce.Repository
                 return null;
             }
 
-            return _db.Products.FirstOrDefault(p => p.ProductId == id);
+            return _db.Products
+                .Include(
+                    p => p.Category
+                    )
+                .FirstOrDefault(
+                    p => p.ProductId == id
+                    );
         }
 
         public ICollection<Product> GetProductForCategory(int categoryId)
@@ -88,12 +95,17 @@ namespace apiEcommerce.Repository
             {
                 return new List<Product>(); // Return an empty list if the categoryId is invalid
             }
-            return _db.Products.Where(p => p.CategoryId == categoryId).OrderBy(p => p.Name).ToList();
+            return _db.Products
+                .Include(
+                    p => p.Category
+                    )
+                .Where(p => p.CategoryId == categoryId)
+                .OrderBy(p => p.Name).ToList();
         }
 
         public ICollection<Product> GetProducts()
         {
-            return _db.Products.OrderBy(p => p.Name).ToList();
+            return _db.Products.Include(p => p.Category).OrderBy(p => p.Name).ToList();
         }
 
         public bool ProductExists(int id)
