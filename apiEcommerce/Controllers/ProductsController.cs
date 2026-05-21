@@ -108,7 +108,7 @@ namespace apiEcommerce.Controllers
         }
 
 
-        //Endpoint Get products by category id
+        //Endpoint Get products by name and description
         [HttpGet("searchProductByNameDescription/{searchTerm}", Name = "SearchProducts")]
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
@@ -124,6 +124,39 @@ namespace apiEcommerce.Controllers
             }
             var productsDto = _mapper.Map<List<ProductDto>>(products);
             return Ok(productsDto);
+        }
+
+        //Endpoint to buy a product
+        [HttpPatch("buyProduct/{name}/{quantity:int}", Name = "BuyProduct")]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // Not found response if the category does not exist
+
+        public IActionResult SearchProducts(string name, int quantity)
+        {
+            var products = _productRepository.BuyProduct(name, quantity);
+
+            if (String.IsNullOrWhiteSpace(name) || quantity <= 0)
+            {
+                return BadRequest($"El nombre del producto no puede estar vacío y la cantidad debe ser mayor a cero");
+            }
+            var foundProduct = _productRepository.ProductExists(name);
+
+            if (!foundProduct)
+            {
+                return NotFound($"El producto con el nombre '{name}' no existe");
+            }
+
+            if (!_productRepository.BuyProduct(name, quantity))
+            {
+                ModelState.AddModelError("CustomError", $"No hay suficiente stock para comprar {quantity} unidades del producto '{name}'");
+                return BadRequest(ModelState);
+            }
+
+            var units = quantity == 1 ? "unidad" : "unidades";
+            return Ok($"Has comprado {quantity} {units} del producto '{name}' exitosamente");
+
         }
 
     }
