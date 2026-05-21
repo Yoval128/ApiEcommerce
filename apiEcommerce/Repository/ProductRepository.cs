@@ -132,13 +132,20 @@ namespace apiEcommerce.Repository
             return _db.SaveChanges() >= 0;
         }
 
-        public ICollection<Product> SearchProduct(string name)
+        public ICollection<Product> SearchProducts(string searchTerm)
         {
             IQueryable<Product> query = _db.Products;
 
-            if (!string.IsNullOrEmpty(name))
+            var searchTermLowe = searchTerm.ToLower().Trim();
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                query = query.Where(p => p.Name.ToLower().Trim() == p.Name.ToLower().Trim());
+                query = query
+                    .Include(
+                    p => p.Category)
+                    .Where(
+                    p => p.Name.ToLower().Trim().Contains(searchTermLowe) ||
+                    p.Description.ToLower().Trim().Contains(searchTermLowe)
+                    );
             }
 
             return query.OrderBy(p => p.Name).ToList();
