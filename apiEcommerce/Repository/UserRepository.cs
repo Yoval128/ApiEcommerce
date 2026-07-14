@@ -1,6 +1,7 @@
 ﻿using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace apiEcommerce.Repository
 {
@@ -12,10 +13,12 @@ namespace apiEcommerce.Repository
         // pplicationDbContext _db;
 
         private readonly ApplicationDbContext _db;
+        private string? secretKey; // Declare a private field to store the secret key for JWT token generation
 
-        public UserRepository(ApplicationDbContext db)
+        public UserRepository(ApplicationDbContext db, IConfiguration configuration)
         {
             _db = db;
+            secretKey = configuration.GetValue<string>("ApiSettings:SecretKey");
         }
 
         //Get a list of all users
@@ -38,13 +41,41 @@ namespace apiEcommerce.Repository
             return !_db.Users.Any(u => u.Username.ToLower().Trim() == UserName.ToLower().Trim());
         }
 
-        public Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDTO) { }
+        public async Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDTO)
+        {
+            // Check if the username is null or empty and return a UserLoginResponseDTO object with an error message
+            if (string.IsNullOrEmpty(userLoginDTO.Username))
+            {
+                // Return a UserLoginResponseDTO object with an error message if the username is null or empty
+                return new UserLoginResponseDTO()
+                {
+                    Token = "",
+                    User = null,
+                    Message = "Username is required"
+                };
+            }
+            var user = await _db.Users.FirstOrDefaultAsync(
+                u => u.Username.ToLower().Trim() == userLoginDTO.Username.ToLower().Trim()
+                );
 
+            if (user == null)
+            {
+                Token = "",
+                    User = null,
+                    Message = "Username not found"
+
+
+            }
+        }
+
+        //Get a CreateUserDto object and return a object User
         public async Task<User> Register(CreateUserDTO createUserDTO)
         {
+            //Encrypt the password using BCrypt and store it in the database
             var encryptedPassword = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
 
-            var User = new User
+            //Create a new User object and set its properties to the values from the CreateUserDTO object
+            var user = new User()
             {
                 Username = createUserDTO.Username,
                 Name = createUserDTO.Name,
@@ -52,9 +83,10 @@ namespace apiEcommerce.Repository
                 Password = encryptedPassword,
             };
 
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
-            return User;
+
+            _db.Users.Add(user); // Add the new user to the database
+            await _db.SaveChangesAsync(); // Save the changes to the database
+            return user; // Return the newly created user
         }
     }
 }
