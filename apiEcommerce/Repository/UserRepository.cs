@@ -2,9 +2,14 @@
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace apiEcommerce.Repository
 {
+    //Metho
     public class UserRepository : IUserRepository
     {
         // Declare a private read-only field of type
@@ -54,18 +59,57 @@ namespace apiEcommerce.Repository
                     Message = "Username is required"
                 };
             }
+
+            // Validate the username
             var user = await _db.Users.FirstOrDefaultAsync(
                 u => u.Username.ToLower().Trim() == userLoginDTO.Username.ToLower().Trim()
                 );
 
+            // Check if the user is null and return a UserLoginResponseDTO object with an error message
             if (user == null)
             {
-                Token = "",
+                return new UserLoginResponseDTO()
+                {
+                    Token = "",
                     User = null,
                     Message = "Username not found"
-
-
+                };
             }
+
+            //Check if the password is null or empty and return a UserLoginResponseDTO object with an error message
+            if (!BCrypt.Net.BCrypt.Verify(userLoginDTO.Password, user.Password))
+            {
+                return new UserLoginResponseDTO()
+                {
+                    Token = "",
+                    User = null,
+                    Message = "Password is incorrect"
+                };
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new InvalidOperationException("Secret key is not configured.");
+            }
+
+            var key = Encoding.UTF8.GetBytes(secretKey!);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                   new Claim("id",user.Id.ToString()),
+                   new Claim("username",user.Username),
+                   new Claim(ClaimTypes.Role,user.Role ?? string.Empty)
+
+                };
+
+
+            };
+
+            return 0;
         }
 
         //Get a CreateUserDto object and return a object User
