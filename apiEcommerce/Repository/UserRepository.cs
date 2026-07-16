@@ -87,29 +87,55 @@ namespace apiEcommerce.Repository
                 };
             }
 
+            // declare a new instance of JwtSecurityTokenHandler to create a JWT token
             var handler = new JwtSecurityTokenHandler();
 
+            //check if the secret key is null or empty and throw an exception if it is
             if (string.IsNullOrEmpty(secretKey))
             {
                 throw new InvalidOperationException("Secret key is not configured.");
             }
 
+            // declare a byte array to hold the secret key for signing the JWT token
             var key = Encoding.UTF8.GetBytes(secretKey!);
 
+            //check if the key is null or empty and throw an exception if it is
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+                //The Subject property is set to a new ClaimsIdentity object that contains the user's ID,
+                //username, and role as claims.
+                //The Expires property is set to 2 hours from the current UTC time,
+                //and the SigningCredentials property is set to use the HMAC SHA256 algorithm with the secret key for signing the token.
                 Subject = new ClaimsIdentity(new[]
                 {
-                   new Claim("id",user.Id.ToString()),
-                   new Claim("username",user.Username),
-                   new Claim(ClaimTypes.Role,user.Role ?? string.Empty)
+                   new Claim("id",user.Id.ToString()), // Add the user's ID as a claim
+                   new Claim("username",user.Username), // Add the user's username as a claim
+                   new Claim(ClaimTypes.Role,user.Role ?? string.Empty) // Add the user's role as a claim, or an empty string if the role is null
 
-                };
+                }),
 
-
+                Expires = DateTime.UtcNow.AddHours(2), // Set the token expiration time to 2 hour from now
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                // Set the signing credentials to use the HMAC SHA256 algorithm with the secret key
             };
 
-            return 0;
+            // Create a new JWT token using the token descriptor
+            var token = handler.CreateToken(tokenDescriptor);
+
+            // Return a UserLoginResponseDTO object with the generated token, user information, and a success message
+            return new UserLoginResponseDTO()
+            {
+                Token = handler.WriteToken(token), // Write the token to a string and set it as the Token property
+
+                User = new UserRegisterDTO() // Create a new UserRegisterDTO object and set its properties to the user's information
+                {
+                    Username = user.Username,
+                    Name = user.Name,
+                    Role = user.Role,
+                    Password = user.Password ?? "",
+                },
+                Message = "Login successful",
+            };
         }
 
         //Get a CreateUserDto object and return a object User
@@ -121,7 +147,7 @@ namespace apiEcommerce.Repository
             //Create a new User object and set its properties to the values from the CreateUserDTO object
             var user = new User()
             {
-                Username = createUserDTO.Username,
+                Username = createUserDTO.Username ?? "",
                 Name = createUserDTO.Name,
                 Role = createUserDTO.Role,
                 Password = encryptedPassword,

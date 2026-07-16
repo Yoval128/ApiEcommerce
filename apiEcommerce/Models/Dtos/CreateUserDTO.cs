@@ -8,7 +8,7 @@ namespace apiEcommerce.Models.Dtos
         public string? Name { get; set; }
 
         [Required(ErrorMessage = "El campo UserName es requerido")]
-        public string? Username { get; set}
+        public string? Username { get; set; }
         [Required(ErrorMessage = "El campo Password es requerido")]
         public string? Password { get; set; }
 
