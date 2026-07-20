@@ -11,7 +11,7 @@ namespace apiEcommerce.Repository.IRepository
         // Get a user by ID and return a user
         User? GetUser(int id);
         // Get a username and return a bool indicating whether it is unique
-        bool GetUser(string UserName);
+        bool IsUniqueUser(string username);
         // Get a UserLoginDto object and return a UserLoginResponseDto
         Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDTO);
         // Get a CreateUserDto object and return a object User 

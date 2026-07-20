@@ -39,12 +39,7 @@ namespace apiEcommerce.Repository
             return _db.Users.FirstOrDefault(u => u.Id == id);
         }
 
-        //Get a username and return a bool indicating whether it is unique
-        public bool GetUser(string UserName)
-        {
-            //ignoring case and whitespace, and return true if no user with the same username exists, otherwise return false
-            return !_db.Users.Any(u => u.Username.ToLower().Trim() == UserName.ToLower().Trim());
-        }
+
 
         public async Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDTO)
         {
@@ -158,5 +153,13 @@ namespace apiEcommerce.Repository
             await _db.SaveChangesAsync(); // Save the changes to the database
             return user; // Return the newly created user
         }
+
+        //Get a username and return a bool indicating whether it is unique
+        public bool IsUniqueUser(string username)
+        {
+            //ignoring case and whitespace, and return true if no user with the same username exists, otherwise return false
+            return !_db.Users.Any(u => u.Username.ToLower().Trim() == username.ToLower().Trim());
+        }
+
     }
 }
