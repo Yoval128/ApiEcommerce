@@ -92,5 +92,29 @@ namespace apiEcommerce.Controllers
 
             return CreatedAtRoute("GetUser", new { id = result.Id }, result); // Return a 201 Created response with the location of the newly created user
         }
+
+        //Endpoint to login a user  
+        [HttpPost("login", Name = "LoginUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
+        public async Task<IActionResult> LoginUser([FromBody] UserLoginDTO userLoginDTO)
+        {
+            if (userLoginDTO == null || !ModelState.IsValid)
+            {
+                return BadRequest(ModelState); //return a 400 Bad Request response with the model state errors
+            }
+
+            var user = await _userRepository.Login(userLoginDTO); // Call the Login method of the user repository to authenticate the user
+
+            if (user == null)
+            {
+                return Unauthorized(); // Return a 401 Unauthorized response if the user authentication fails
+            }
+
+            return Ok(user); // Return a 200 OK response with the authenticated user data
+        }
     }
 }
