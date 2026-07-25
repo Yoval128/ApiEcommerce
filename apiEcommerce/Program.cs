@@ -30,6 +30,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//CROSS configuration
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        policy =>
+        {
+            policy.AllowAnyOrigin()   // Allow requests from any origin, and you can add more with a comma-separated list of origins example: "http://example.com,http://anotherexample.com"
+                  .AllowAnyMethod()   // Allow any HTTP method (GET, POST, PUT, DELETE, etc.)
+                  .AllowAnyHeader();  // Allow any header
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,6 +53,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthorization();
 
