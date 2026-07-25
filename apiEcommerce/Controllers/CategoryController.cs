@@ -2,12 +2,16 @@
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiEcommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+    // [EnableCors("AllowSpecificOrigins")]
+    // [EnableCors(PolicyNames.AllowSpecificOrigin)]
     public class CategoryController : ControllerBase
     {
 
@@ -28,7 +32,8 @@ namespace apiEcommerce.Controllers
         [HttpGet] // GET: api/Category
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
-
+        // [EnableCors(PolicyNames.AllowSpecificOrigin)]
+        // [EnableCors("AllowSpecificOrigin")] example of how to enable CORS for this endpoint, but it is commented out because it is not needed in this case
         public IActionResult GetCategories()
         {
             var categories = _categoryRepository.GetCategories(); // Retrieve categories from the repository

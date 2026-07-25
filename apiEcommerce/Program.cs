@@ -1,5 +1,7 @@
+using apiEcommerce.Constants;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -22,6 +24,12 @@ builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping
     cfg.AddMaps(typeof(Program).Assembly);
 });
 
+// Add authentication services to the service collection and configure the default authentication scheme to use JWT Bearer tokens
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // Set the default authentication scheme to JWT Bearer
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // Set the default challenge scheme to JWT Bearer
+});
 
 //Controllers are added to the service collection, which allows the application to
 //handle HTTP requests and return responses
@@ -29,6 +37,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//CROSS configuration
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(PolicyNames.AllowSpecificOrigin,
+        policy =>
+        {
+            policy.AllowAnyOrigin()   // Allow requests from any origin, and you can add more with a comma-separated list of origins example: "http://example.com,http://anotherexample.com"
+                  .AllowAnyMethod()   // Allow any HTTP method (GET, POST, PUT, DELETE, etc.)
+                  .AllowAnyHeader();  // Allow any header
+        });
+});
 
 var app = builder.Build();
 
@@ -40,6 +61,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(PolicyNames.AllowSpecificOrigin);
 
 app.UseAuthorization();
 
