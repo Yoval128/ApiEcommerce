@@ -3,6 +3,8 @@ using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,11 +26,32 @@ builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping
     cfg.AddMaps(typeof(Program).Assembly);
 });
 
+
+// Get the secret key from the configuration for JWT token validation
+var secretKey = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
+
+if (string.IsNullOrEmpty(secretKey))
+{
+    throw new InvalidOperationException("Secret key is not configured in appsettings.json");
+}
+
 // Add authentication services to the service collection and configure the default authentication scheme to use JWT Bearer tokens
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // Set the default authentication scheme to JWT Bearer
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // Set the default challenge scheme to JWT Bearer
+}).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false; // Disable HTTPS metadata requirement for development purposes
+    options.SaveToken = true; // Save the token in the authentication properties
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true, // Validate the signing key of the token
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), // Use the secret key to validate the token's signature
+        ValidateIssuer = false, // Disable issuer validation for simplicity
+        ValidateAudience = true, // Enable audience validation to ensure the token is intended for this application
+    };
 });
 
 //Controllers are added to the service collection, which allows the application to
