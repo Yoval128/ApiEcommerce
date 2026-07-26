@@ -4,6 +4,7 @@ using apiEcommerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 
@@ -50,7 +51,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true, // Validate the signing key of the token
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), // Use the secret key to validate the token's signature
         ValidateIssuer = false, // Disable issuer validation for simplicity
-        ValidateAudience = true, // Enable audience validation to ensure the token is intended for this application
+        ValidateAudience = false,
     };
 });
 
@@ -59,9 +60,42 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-//CROSS configuration
+builder.Services.AddSwaggerGen(
+  options =>
+  {
+      // Add a security definition for JWT Bearer authentication to the Swagger documentation
+      options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+      {
+          Description = "Nuestra API utiliza la Autenticación JWT usando el esquema Bearer. \n\r\n\r" +
+                      "Ingresa la palabra a continuación el token generado en login.\n\r\n\r" +
+                      "Ejemplo: \"12345abcdef\"",
+          Name = "Authorization",
+          In = ParameterLocation.Header,
+          Type = SecuritySchemeType.Http,
+          Scheme = "Bearer"
+      });
+      options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+      {
+        new OpenApiSecurityScheme
+        {
+          Reference = new OpenApiReference
+          {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer" //Use the name of the schema created 
+          },
+          Scheme = "oauth2",
+          Name = "Bearer",
+          In = ParameterLocation.Header
+        },
+        new List<string>()
+      }
+    });
+  }
+);
+
+//Cors configuration
 
 builder.Services.AddCors(options =>
 {
@@ -86,6 +120,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -1,0 +1,240 @@
+{
+  "info": {
+    "_postman_id": "c6a98d7f-4f27-4408-a30e-5e0f95b1ee17",
+    "name": "ApiEcommerce",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51978123",
+    "_collection_link": "https://go.postman.co/collection/51978123-c6a98d7f-4f27-4408-a30e-5e0f95b1ee17?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{env}}/api/Category",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "Category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CategoriesById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{env}}/api/Category/1",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "Category",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CreateCategories",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"string\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{env}}/api/Category",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "Category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DeleteCategoires",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{env}}/api/Category",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "Category"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PutCategories",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"string\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{env}}/api/Category",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "Category"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GetUsers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{env}}/api/User",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "User"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"string\",\r\n  \"password\": \"string\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{env}}/api/User/login",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "User",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CreateUser",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Ivan\",\r\n  \"username\": \"dev123\",\r\n  \"password\": \"12345678\",\r\n  \"role\": \"Admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{env}}/api/User",
+              "host": [
+                "{{env}}"
+              ],
+              "path": [
+                "api",
+                "User"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "value": ""
+    },
+    {
+      "key": "env",
+      "value": ""
+    },
+    {
+      "key": "supabase_service_role_api_key_13vi",
+      "secret": true
+    }
+  ]
+}

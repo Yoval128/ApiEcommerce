@@ -9,7 +9,7 @@ namespace apiEcommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     // [EnableCors("AllowSpecificOrigins")]
     // [EnableCors(PolicyNames.AllowSpecificOrigin)]
     public class CategoryController : ControllerBase
@@ -29,6 +29,7 @@ namespace apiEcommerce.Controllers
         }
 
         // Endpoint to get all categories
+        [AllowAnonymous] // Allow anonymous access to this endpoint
         [HttpGet] // GET: api/Category
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
@@ -49,6 +50,7 @@ namespace apiEcommerce.Controllers
         }
 
         //Endpoint to get category by id
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCategory")] // Get: api/Category/{id} where id is an integer
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
