@@ -1,11 +1,12 @@
 ﻿using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiEcommerce.Controllers
 {
-
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -56,6 +57,7 @@ namespace apiEcommerce.Controllers
 
 
         //Enpoint to create a new user
+        [AllowAnonymous]
         [HttpPost(Name = "RegisterUser")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,6 +96,7 @@ namespace apiEcommerce.Controllers
         }
 
         //Endpoint to login a user  
+        [AllowAnonymous]
         [HttpPost("login", Name = "LoginUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

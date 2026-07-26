@@ -2,12 +2,14 @@
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiEcommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
 
@@ -25,6 +27,7 @@ namespace apiEcommerce.Controllers
         //Endpoint to get all products
 
         [HttpGet]
+        [AllowAnonymous] // Allow anonymous access to this endpoint
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
 
@@ -36,7 +39,7 @@ namespace apiEcommerce.Controllers
         }
 
         //Endpoint to get product by id
-
+        [AllowAnonymous]
         [HttpGet("{productId:int}", Name = "GetProduct")]
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid

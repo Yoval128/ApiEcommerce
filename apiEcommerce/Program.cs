@@ -50,7 +50,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true, // Validate the signing key of the token
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)), // Use the secret key to validate the token's signature
         ValidateIssuer = false, // Disable issuer validation for simplicity
-        ValidateAudience = true, // Enable audience validation to ensure the token is intended for this application
+        ValidateAudience = false,
     };
 });
 
@@ -86,6 +86,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
