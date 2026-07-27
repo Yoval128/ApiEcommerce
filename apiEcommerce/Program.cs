@@ -16,6 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 // with the dependency injection container
 var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1000; // Define the 
+    options.UseCaseSensitivePaths = true; // Configurate 
+});
+
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Register the category repository with the dependency injection container
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Register the product repository with the dependency injection container
@@ -120,6 +127,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+
+app.UseResponseCaching();
 
 app.UseAuthentication();
 
