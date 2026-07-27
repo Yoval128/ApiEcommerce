@@ -52,7 +52,8 @@ namespace apiEcommerce.Controllers
         //Endpoint to get category by id
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCategory")] // Get: api/Category/{id} where id is an integer
-        [ResponseCache(Duration = 10)] // Cache for 10 seconds
+                                                    //   [ResponseCache(Duration = 10)] // Cache for 10 seconds
+        [ResponseCache(CacheProfileName = "Default10")]// Use of a cache profile
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission

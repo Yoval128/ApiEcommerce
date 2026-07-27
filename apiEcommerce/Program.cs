@@ -2,6 +2,7 @@ using apiEcommerce.Constants;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -19,8 +20,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddResponseCaching(options =>
 {
-    options.MaximumBodySize = 1000; // Define the 
-    options.UseCaseSensitivePaths = true; // Configurate 
+    options.MaximumBodySize = 1024 * 1024; // Define the one megabite 
+    options.UseCaseSensitivePaths = true; // Configurate sensibility for case and 
 });
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Register the category repository with the dependency injection container
@@ -64,7 +65,18 @@ builder.Services.AddAuthentication(options =>
 
 //Controllers are added to the service collection, which allows the application to
 //handle HTTP requests and return responses
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add("Default10", new CacheProfile()
+    {
+        Duration = 10
+    });
+
+    options.CacheProfiles.Add("Default20", new CacheProfile()
+    {
+        Duration = 20
+    });
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
