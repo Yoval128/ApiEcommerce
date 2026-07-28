@@ -2,7 +2,6 @@ using apiEcommerce.Constants;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -67,15 +66,9 @@ builder.Services.AddAuthentication(options =>
 //handle HTTP requests and return responses
 builder.Services.AddControllers(options =>
 {
-    options.CacheProfiles.Add("Default10", new CacheProfile()
-    {
-        Duration = 10
-    });
+    options.CacheProfiles.Add(CacheProfiles.Default10, CacheProfiles.Profile10);
 
-    options.CacheProfiles.Add("Default20", new CacheProfile()
-    {
-        Duration = 20
-    });
+    options.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Profile20);
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

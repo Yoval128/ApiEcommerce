@@ -1,4 +1,5 @@
-﻿using apiEcommerce.Models;
+﻿using apiEcommerce.Constants;
+using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using AutoMapper;
@@ -53,7 +54,7 @@ namespace apiEcommerce.Controllers
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCategory")] // Get: api/Category/{id} where id is an integer
                                                     //   [ResponseCache(Duration = 10)] // Cache for 10 seconds
-        [ResponseCache(CacheProfileName = "Default10")]// Use of a cache profile
+        [ResponseCache(CacheProfileName = CacheProfiles.Default10)]// Use of a cache profile
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
