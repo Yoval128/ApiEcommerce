@@ -16,6 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 // with the dependency injection container
 var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024 * 1024; // Define the one megabite 
+    options.UseCaseSensitivePaths = true; // Configurate sensibility for case and 
+});
+
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // Register the category repository with the dependency injection container
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Register the product repository with the dependency injection container
@@ -57,7 +64,12 @@ builder.Services.AddAuthentication(options =>
 
 //Controllers are added to the service collection, which allows the application to
 //handle HTTP requests and return responses
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add(CacheProfiles.Default10, CacheProfiles.Profile10);
+
+    options.CacheProfiles.Add(CacheProfiles.Default20, CacheProfiles.Profile20);
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -120,6 +132,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+
+app.UseResponseCaching();
 
 app.UseAuthentication();
 

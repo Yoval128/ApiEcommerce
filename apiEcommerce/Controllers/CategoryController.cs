@@ -1,4 +1,5 @@
-﻿using apiEcommerce.Models;
+﻿using apiEcommerce.Constants;
+using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using AutoMapper;
@@ -52,6 +53,8 @@ namespace apiEcommerce.Controllers
         //Endpoint to get category by id
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCategory")] // Get: api/Category/{id} where id is an integer
+                                                    //   [ResponseCache(Duration = 10)] // Cache for 10 seconds
+        [ResponseCache(CacheProfileName = CacheProfiles.Default10)]// Use of a cache profile
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
@@ -59,7 +62,11 @@ namespace apiEcommerce.Controllers
 
         public IActionResult GetCategories(int id)
         {
+            System.Console.Write($"Categorua con el {id} empieza a las {DateTime.Now} ");
+
             var categories = _categoryRepository.GetCategory(id); // Retrieve the category with the specified id from the repository
+
+            System.Console.WriteLine($"Respues con el di {id}");
             if (categories == null)
             {
                 return NotFound($"La categoria con el id {id} no existe"); // Return a 404 Not Found response if the category does not exist
