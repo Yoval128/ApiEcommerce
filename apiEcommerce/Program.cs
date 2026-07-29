@@ -1,6 +1,7 @@
 using apiEcommerce.Constants;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -107,8 +108,32 @@ builder.Services.AddSwaggerGen(
   }
 );
 
-//Cors configuration
+// Configure API versioning.
+var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
+{
+    // If the client does not specify an API version, use the default version.
+    options.AssumeDefaultVersionWhenUnspecified = true;
 
+    // Set the default API version.
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+
+    // Include the supported and deprecated API versions in the response headers.
+    options.ReportApiVersions = true;
+
+    // Read the API version from the query string (?api-version=1.0).
+    options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
+});
+
+apiVersioningBuilder.AddApiExplorer(options =>
+{
+    // Define the API version group name format (v1, v2, v3, etc.).
+    options.GroupNameFormat = "'v'VVV";
+
+    // Replace the API version placeholder in the URL with the actual version.
+    options.SubstituteApiVersionInUrl = true;
+});
+
+//Cors configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(PolicyNames.AllowSpecificOrigin,
