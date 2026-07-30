@@ -74,8 +74,7 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(
-  options =>
+builder.Services.AddSwaggerGen(options =>
   {
       // Add a security definition for JWT Bearer authentication to the Swagger documentation
       options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -105,8 +104,44 @@ builder.Services.AddSwaggerGen(
         new List<string>()
       }
     });
-  }
-);
+
+      options.SwaggerDoc("v1", new OpenApiInfo
+      {
+          Version = "v1",
+          Title = "ApiEcomers",
+          Description = "API for managing products and users",
+          TermsOfService = new Uri("http://example.com/Terms"),
+          Contact = new OpenApiContact
+          {
+              Name = "YovalDev",
+              Url = new Uri("https://yoval-dev.vercel.app/"),
+
+          },
+          License = new OpenApiLicense
+          {
+              Name = "Use License",
+              Url = new Uri("http://example.com/license"),
+          }
+      });
+
+      options.SwaggerDoc("v2", new OpenApiInfo
+      {
+          Version = "v2",
+          Title = "ApiEcommerce",
+          Description = "APIs for manageming user and products",
+          TermsOfService = new Uri("http://example.com/Terms"),
+          Contact = new OpenApiContact
+          {
+              Name = "YovalDev",
+              Url = new Uri("https://yoval-dev.vercel.app/"),
+          },
+          License = new OpenApiLicense
+          {
+              Name = "Use License",
+              Url = new Uri("http://example.com/Terms"),
+          }
+      });
+  });
 
 // Configure API versioning.
 var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
@@ -121,7 +156,7 @@ var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 
     // Read the API version from the query string (?api-version=1.0).
-    options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
+    //  options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
 });
 
 apiVersioningBuilder.AddApiExplorer(options =>
@@ -151,7 +186,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+    });
 }
 
 app.UseHttpsRedirection();
