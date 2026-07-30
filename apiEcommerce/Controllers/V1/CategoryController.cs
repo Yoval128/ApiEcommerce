@@ -7,11 +7,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace apiEcommerce.Controllers
+namespace apiEcommerce.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
     [ApiController]
     [Authorize(Roles = "admin")]
     // [EnableCors("AllowSpecificOrigins")]
@@ -39,30 +38,9 @@ namespace apiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
                                                                // [EnableCors(PolicyNames.AllowSpecificOrigin)]
                                                                // [EnableCors("AllowSpecificOrigin")] example of how to enable CORS for this endpoint, but it is commented out because it is not needed in this case
-        [MapToApiVersion("1.0")]
         public IActionResult GetCategories()
         {
             var categories = _categoryRepository.GetCategories(); // Retrieve categories from the repository
-            var categoriesDto = new List<CategoryDto>(); // Create a list to hold the category DTOs
-
-            // Map each category entity to a CategoryDto and add it to the list
-            foreach (var category in categories)
-            {
-                categoriesDto.Add(_mapper.Map<CategoryDto>(category)); // Add each category DTO to the list
-            }
-
-            return Ok(categoriesDto);
-        }
-
-        //Endpoint to get categories order  by id
-        [AllowAnonymous] // Allow anonymous access to this endpoint
-        [HttpGet] // GET: api/Category
-        [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
-        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
-        [MapToApiVersion("2.0")]
-        public IActionResult GetCategoriesOrderById()
-        {
-            var categories = _categoryRepository.GetCategories().OrderByDescending(ctg => ctg.Id); // Order categories by id
             var categoriesDto = new List<CategoryDto>(); // Create a list to hold the category DTOs
 
             // Map each category entity to a CategoryDto and add it to the list
@@ -86,11 +64,11 @@ namespace apiEcommerce.Controllers
 
         public IActionResult GetCategories(int id)
         {
-            System.Console.Write($"Categorua con el {id} empieza a las {DateTime.Now} ");
+            Console.Write($"Categorua con el {id} empieza a las {DateTime.Now} ");
 
             var categories = _categoryRepository.GetCategory(id); // Retrieve the category with the specified id from the repository
 
-            System.Console.WriteLine($"Respues con el di {id}");
+            Console.WriteLine($"Respues con el di {id}");
             if (categories == null)
             {
                 return NotFound($"La categoria con el id {id} no existe"); // Return a 404 Not Found response if the category does not exist
