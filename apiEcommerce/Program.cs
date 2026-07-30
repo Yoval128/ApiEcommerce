@@ -1,6 +1,7 @@
 using apiEcommerce.Constants;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -73,8 +74,7 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(
-  options =>
+builder.Services.AddSwaggerGen(options =>
   {
       // Add a security definition for JWT Bearer authentication to the Swagger documentation
       options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -104,11 +104,71 @@ builder.Services.AddSwaggerGen(
         new List<string>()
       }
     });
-  }
-);
+
+      options.SwaggerDoc("v1", new OpenApiInfo
+      {
+          Version = "v1",
+          Title = "ApiEcomers",
+          Description = "API for managing products and users",
+          TermsOfService = new Uri("http://example.com/Terms"),
+          Contact = new OpenApiContact
+          {
+              Name = "YovalDev",
+              Url = new Uri("https://yoval-dev.vercel.app/"),
+
+          },
+          License = new OpenApiLicense
+          {
+              Name = "Use License",
+              Url = new Uri("http://example.com/license"),
+          }
+      });
+
+      options.SwaggerDoc("v2", new OpenApiInfo
+      {
+          Version = "v2",
+          Title = "ApiEcommerce",
+          Description = "APIs for manageming user and products",
+          TermsOfService = new Uri("http://example.com/Terms"),
+          Contact = new OpenApiContact
+          {
+              Name = "YovalDev",
+              Url = new Uri("https://yoval-dev.vercel.app/"),
+          },
+          License = new OpenApiLicense
+          {
+              Name = "Use License",
+              Url = new Uri("http://example.com/Terms"),
+          }
+      });
+  });
+
+// Configure API versioning.
+var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
+{
+    // If the client does not specify an API version, use the default version.
+    options.AssumeDefaultVersionWhenUnspecified = true;
+
+    // Set the default API version.
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+
+    // Include the supported and deprecated API versions in the response headers.
+    options.ReportApiVersions = true;
+
+    // Read the API version from the query string (?api-version=1.0).
+    //  options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api-version"));
+});
+
+apiVersioningBuilder.AddApiExplorer(options =>
+{
+    // Define the API version group name format (v1, v2, v3, etc.).
+    options.GroupNameFormat = "'v'VVV";
+
+    // Replace the API version placeholder in the URL with the actual version.
+    options.SubstituteApiVersionInUrl = true;
+});
 
 //Cors configuration
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(PolicyNames.AllowSpecificOrigin,
@@ -126,7 +186,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+    });
 }
 
 app.UseHttpsRedirection();

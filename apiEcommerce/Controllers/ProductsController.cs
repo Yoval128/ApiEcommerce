@@ -1,15 +1,17 @@
 ﻿using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace apiEcommerce.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
+    [ApiVersionNeutral]
     public class ProductsController : ControllerBase
     {
 

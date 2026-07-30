@@ -2,15 +2,17 @@
 using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace apiEcommerce.Controllers
+namespace apiEcommerce.Controllers.V2
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("2.0")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     // [EnableCors("AllowSpecificOrigins")]
     // [EnableCors(PolicyNames.AllowSpecificOrigin)]
     public class CategoryController : ControllerBase
@@ -29,16 +31,14 @@ namespace apiEcommerce.Controllers
             _mapper = mapper;
         }
 
-        // Endpoint to get all categories
+        //Endpoint to get all categories order  by id
         [AllowAnonymous] // Allow anonymous access to this endpoint
         [HttpGet] // GET: api/Category
         [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
-        // [EnableCors(PolicyNames.AllowSpecificOrigin)]
-        // [EnableCors("AllowSpecificOrigin")] example of how to enable CORS for this endpoint, but it is commented out because it is not needed in this case
-        public IActionResult GetCategories()
+        public IActionResult GetCategoriesOrderById()
         {
-            var categories = _categoryRepository.GetCategories(); // Retrieve categories from the repository
+            var categories = _categoryRepository.GetCategories().OrderByDescending(ctg => ctg.Id); // Order categories by id
             var categoriesDto = new List<CategoryDto>(); // Create a list to hold the category DTOs
 
             // Map each category entity to a CategoryDto and add it to the list
