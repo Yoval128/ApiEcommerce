@@ -38,6 +38,7 @@ namespace apiEcommerce.Controllers.V1
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
                                                                // [EnableCors(PolicyNames.AllowSpecificOrigin)]
                                                                // [EnableCors("AllowSpecificOrigin")] example of how to enable CORS for this endpoint, but it is commented out because it is not needed in this case
+        [Obsolete("This method is Obsolete, Use the version 2")]
         public IActionResult GetCategories()
         {
             var categories = _categoryRepository.GetCategories(); // Retrieve categories from the repository
