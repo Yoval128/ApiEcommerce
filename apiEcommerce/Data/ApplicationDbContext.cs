@@ -11,6 +11,14 @@ public class ApplicationDbContext : DbContext
     {
 
     }
+
+
+    // The OnModelCreating method is overridden to configure the model
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
+
     // The Categories property is a DbSet of Category
     // entities, which represents the Categories
     // table in the database.
@@ -19,5 +27,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Product> Products { get; set; }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 }
 
