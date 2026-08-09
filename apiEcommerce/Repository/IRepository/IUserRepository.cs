@@ -15,6 +15,8 @@ namespace apiEcommerce.Repository.IRepository
         // Get a UserLoginDto object and return a UserLoginResponseDto
         Task<UserLoginResponseDTO> Login(UserLoginDTO userLoginDTO);
         // Get a CreateUserDto object and return a object User 
-        Task<User> Register(CreateUserDTO createUserDTO);
+
+        // Task<User> Register(CreateUserDTO createUserDTO); Old method signature
+        Task<UserDataDTO> Register(CreateUserDTO createUserDTO);
     }
 }

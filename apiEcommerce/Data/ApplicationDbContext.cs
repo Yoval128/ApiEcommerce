@@ -1,11 +1,12 @@
 ﻿using apiEcommerce.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 // The ApplicationDbContext class inherits from DbContext,
 // which is a part of the Entity Framework Core library.
 // This class is responsible for managing the database
 // connection and providing access to the database tables through DbSet properties.
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

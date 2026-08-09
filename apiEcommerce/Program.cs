@@ -1,4 +1,5 @@
 using apiEcommerce.Constants;
+using apiEcommerce.Models;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
@@ -37,9 +38,9 @@ builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping
 });
 
 // Configure Indetity services for user authentication and authorization
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>() // Use the ApplicationDbContext for storing user and role information
-    .AddDefaultTokenProviders(); // Add default token providers for generating tokens for password reset, email confirmation, etc.
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>()  // Use the ApplicationDbContext for storing user and role information
+.AddDefaultTokenProviders(); // Add default token providers for generating tokens for password reset, email confirmation, etc.
 
 // Get the secret key from the configuration for JWT token validation
 var secretKey = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
