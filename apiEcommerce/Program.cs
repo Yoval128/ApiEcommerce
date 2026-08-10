@@ -188,6 +188,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+Console.WriteLine($"ContentRoot: {app.Environment.ContentRootPath}");
+Console.WriteLine($"WebRoot: {app.Environment.WebRootPath}");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

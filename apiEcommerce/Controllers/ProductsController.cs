@@ -95,7 +95,7 @@ namespace apiEcommerce.Controllers
                     Path.GetExtension(createProductDto.Image.FileName);
 
                 // Set the ImgUrl property of the product to the relative path of the image
-                var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwroot", "ProductsImages");
+                var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
 
                 // validate if the folder exists, if not create it
                 if (!Directory.Exists(imagesFolder))
