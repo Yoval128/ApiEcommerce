@@ -199,6 +199,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseStaticFiles(); // Enable serving static files from the wwwroot folder
+
 app.UseHttpsRedirection();
 
 app.UseCors(PolicyNames.AllowSpecificOrigin);

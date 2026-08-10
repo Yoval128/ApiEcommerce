@@ -84,6 +84,9 @@ namespace apiEcommerce.Controllers
                 return BadRequest(ModelState);
             }
             var product = _mapper.Map<Product>(createProductDto);
+
+            if (createProductDto.image) { }
+
             if (!_productRepository.CreateProduct(product))
             {
                 ModelState.AddModelError("CustomError", $"Algo salió mal al guardar el registro {product.Name}");
