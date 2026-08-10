@@ -1,5 +1,6 @@
 ﻿using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
+using apiEcommerce.Models.Dtos.Response;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
 using AutoMapper;
@@ -114,7 +115,7 @@ namespace apiEcommerce.Controllers
 
             var totalProducts = _productRepository.GetProducts().Count; // Get the total number of products
 
-            var totalPages = Math.Ceiling((double)totalProducts / pageSize); // Calculate the total number of pages as int
+            var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize); // Calculate the total number of pages as int
 
             // validate if the pageNumber is greater than the total number of pages
             if (pageNumber > totalPages)
@@ -125,13 +126,13 @@ namespace apiEcommerce.Controllers
             var product = _productRepository.GetProductsInPage(pageNumber, pageSize); // Retrieve the category with the pageNumber and pageSize from the repository
 
             var productDto = _mapper.Map<List<ProductDto>>(product); // Map the category entity to a ProductDto
-            var paginationResponse = new
+            var paginationResponse = new PaginationResponse<ProductDto>
             {
 
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalPages = totalPages,
-                Product = productDto,
+                Items = productDto,
             };
 
             return Ok(paginationResponse);
