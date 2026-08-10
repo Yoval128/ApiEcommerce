@@ -19,6 +19,42 @@ namespace apiEcommerce.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
+        private void UploadProductImage(dynamic productDto, Product product)
+        {
+            // Generate a unique file name using the product ID and a GUID
+            string fileName = product.ProductId +
+                Guid.NewGuid().ToString() +
+                Path.GetExtension(productDto.Image.FileName);
+
+            // Set the ImgUrl property of the product to the relative path of the image
+            var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
+
+            // validate if the folder exists, if not create it
+            if (!Directory.Exists(imagesFolder))
+            {
+                Directory.CreateDirectory(imagesFolder);
+            }
+            // Combine the folder path and the file name to get the full file path
+            var filePath = Path.Combine(imagesFolder, fileName);
+
+            FileInfo file = new FileInfo(filePath); // Create a FileInfo object for the file path
+
+            // validate if the file exists, if so delete it
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+            using var fileStream = new FileStream(filePath, FileMode.Create); // Create a new file stream to write the image to the server
+
+            productDto.Image.CopyTo(fileStream); // Copy the image to the file stream
+
+            // Set the ImgUrl property of the product to the absolute URL of the image
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+            // Set the ImgUrl property of the product to the absolute URL of the image
+            product.ImgUrl = $"{baseUrl}/ProductsImages/{fileName}";
+            product.ImgUrlLocal = filePath; // Set the ImgUrlLocal property of the product to the local file path of the image
+        }
+
         public ProductsController(IProductRepository productRepository, IMapper mapper, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
@@ -89,38 +125,7 @@ namespace apiEcommerce.Controllers
             // validate if the image is not null, then save it to the server and set the ImgUrl property of the product
             if (createProductDto.Image != null)
             {
-                // Generate a unique file name using the product ID and a GUID
-                string fileName = product.ProductId +
-                    Guid.NewGuid().ToString() +
-                    Path.GetExtension(createProductDto.Image.FileName);
-
-                // Set the ImgUrl property of the product to the relative path of the image
-                var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
-
-                // validate if the folder exists, if not create it
-                if (!Directory.Exists(imagesFolder))
-                {
-                    Directory.CreateDirectory(imagesFolder);
-                }
-                // Combine the folder path and the file name to get the full file path
-                var filePath = Path.Combine(imagesFolder, fileName);
-
-                FileInfo file = new FileInfo(filePath); // Create a FileInfo object for the file path
-
-                // validate if the file exists, if so delete it
-                if (file.Exists)
-                {
-                    file.Delete();
-                }
-                using var fileStream = new FileStream(filePath, FileMode.Create); // Create a new file stream to write the image to the server
-
-                createProductDto.Image.CopyTo(fileStream); // Copy the image to the file stream
-
-                // Set the ImgUrl property of the product to the absolute URL of the image
-                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
-                // Set the ImgUrl property of the product to the absolute URL of the image
-                product.ImgUrl = $"{baseUrl}/ProductsImages/{fileName}";
-                product.ImgUrlLocal = filePath; // Set the ImgUrlLocal property of the product to the local file path of the image
+                UploadProductImage(createProductDto, product);
             }
             else
             {
@@ -223,7 +228,7 @@ namespace apiEcommerce.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (_productRepository.ProductExists(productId))
+            if (!_productRepository.ProductExists(productId))
             {
                 ModelState.AddModelError("CustomError", "El producto no existe");
                 return BadRequest(ModelState);
@@ -239,38 +244,7 @@ namespace apiEcommerce.Controllers
             // validate if the image is not null, then save it to the server and set the ImgUrl property of the product
             if (updateProductDto.Image != null)
             {
-                // Generate a unique file name using the product ID and a GUID
-                string fileName = product.ProductId +
-                    Guid.NewGuid().ToString() +
-                    Path.GetExtension(updateProductDto.Image.FileName);
-
-                // Set the ImgUrl property of the product to the relative path of the image
-                var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
-
-                // validate if the folder exists, if not create it
-                if (!Directory.Exists(imagesFolder))
-                {
-                    Directory.CreateDirectory(imagesFolder);
-                }
-                // Combine the folder path and the file name to get the full file path
-                var filePath = Path.Combine(imagesFolder, fileName);
-
-                FileInfo file = new FileInfo(filePath); // Create a FileInfo object for the file path
-
-                // validate if the file exists, if so delete it
-                if (file.Exists)
-                {
-                    file.Delete();
-                }
-                using var fileStream = new FileStream(filePath, FileMode.Create); // Create a new file stream to write the image to the server
-
-                updateProductDto.Image.CopyTo(fileStream); // Copy the image to the file stream
-
-                // Set the ImgUrl property of the product to the absolute URL of the image
-                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
-                // Set the ImgUrl property of the product to the absolute URL of the image
-                product.ImgUrl = $"{baseUrl}/ProductsImages/{fileName}";
-                product.ImgUrlLocal = filePath; // Set the ImgUrlLocal property of the product to the local file path of the image
+                UploadProductImage(updateProductDto, product);
             }
             else
             {
