@@ -19,6 +19,42 @@ namespace apiEcommerce.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
+        private void UploadProductImage(dynamic productDto, Product product)
+        {
+            // Generate a unique file name using the product ID and a GUID
+            string fileName = product.ProductId +
+                Guid.NewGuid().ToString() +
+                Path.GetExtension(productDto.Image.FileName);
+
+            // Set the ImgUrl property of the product to the relative path of the image
+            var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProductsImages");
+
+            // validate if the folder exists, if not create it
+            if (!Directory.Exists(imagesFolder))
+            {
+                Directory.CreateDirectory(imagesFolder);
+            }
+            // Combine the folder path and the file name to get the full file path
+            var filePath = Path.Combine(imagesFolder, fileName);
+
+            FileInfo file = new FileInfo(filePath); // Create a FileInfo object for the file path
+
+            // validate if the file exists, if so delete it
+            if (file.Exists)
+            {
+                file.Delete();
+            }
+            using var fileStream = new FileStream(filePath, FileMode.Create); // Create a new file stream to write the image to the server
+
+            productDto.Image.CopyTo(fileStream); // Copy the image to the file stream
+
+            // Set the ImgUrl property of the product to the absolute URL of the image
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+            // Set the ImgUrl property of the product to the absolute URL of the image
+            product.ImgUrl = $"{baseUrl}/ProductsImages/{fileName}";
+            product.ImgUrlLocal = filePath; // Set the ImgUrlLocal property of the product to the local file path of the image
+        }
+
         public ProductsController(IProductRepository productRepository, IMapper mapper, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
@@ -67,7 +103,8 @@ namespace apiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Internal server error response if there is an error while creating the category 
 
-        public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto)
+        //public IActionResult CreateProduct([FromBody] CreateProductDto createProductDto) old version without image upload
+        public IActionResult CreateProduct([FromForm] CreateProductDto createProductDto)
         {
             if (createProductDto == null)
             {
@@ -88,37 +125,7 @@ namespace apiEcommerce.Controllers
             // validate if the image is not null, then save it to the server and set the ImgUrl property of the product
             if (createProductDto.Image != null)
             {
-                // Generate a unique file name using the product ID and a GUID
-                string fileName = product.ProductId +
-                    Guid.NewGuid().ToString() +
-                    Path.GetExtension(createProductDto.Image.FileName);
-
-                // Set the ImgUrl property of the product to the relative path of the image
-                var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwroot", "ProductsImages");
-
-                // validate if the folder exists, if not create it
-                if (!Directory.Exists(imagesFolder))
-                {
-                    Directory.CreateDirectory(imagesFolder);
-                }
-                // Combine the folder path and the file name to get the full file path
-                var filePath = Path.Combine(imagesFolder, fileName);
-
-                FileInfo file = new FileInfo(filePath); // Create a FileInfo object for the file path
-
-                // validate if the file exists, if so delete it
-                if (file.Exists)
-                {
-                    file.Delete();
-                }
-                using var fileStream = new FileStream(filePath, FileMode.Create); // Create a new file stream to write the image to the server
-
-                createProductDto.Image.CopyTo(fileStream); // Copy the image to the file stream
-
-                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
-
-                product.ImgUrl = $"{baseUrl}/ProductsImages/{fileName}";
-                product.ImgUrlLocal = filePath;
+                UploadProductImage(createProductDto, product);
             }
             else
             {
@@ -215,13 +222,13 @@ namespace apiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Internal server error response if there is an error while creating the category 
 
-        public IActionResult UpdateProduct(int productId, [FromBody] UpdateProductDto updateProductDto)
+        public IActionResult UpdateProduct(int productId, [FromForm] UpdateProductDto updateProductDto)
         {
             if (updateProductDto == null)
             {
                 return BadRequest(ModelState);
             }
-            if (_productRepository.ProductExists(productId))
+            if (!_productRepository.ProductExists(productId))
             {
                 ModelState.AddModelError("CustomError", "El producto no existe");
                 return BadRequest(ModelState);
@@ -233,6 +240,17 @@ namespace apiEcommerce.Controllers
             }
             var product = _mapper.Map<Product>(updateProductDto);
             product.ProductId = productId;
+
+            // validate if the image is not null, then save it to the server and set the ImgUrl property of the product
+            if (updateProductDto.Image != null)
+            {
+                UploadProductImage(updateProductDto, product);
+            }
+            else
+            {
+                product.ImgUrl = "https://placehold.co/300x300";
+            }
+
             if (!_productRepository.UpdateProduct(product))
             {
                 ModelState.AddModelError("CustomError", $"Algo salió mal al actualizar el registro {product.Name}");
