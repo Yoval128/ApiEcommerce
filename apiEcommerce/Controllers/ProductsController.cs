@@ -217,7 +217,7 @@ namespace apiEcommerce.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Internal server error response if there is an error while creating the category 
 
-        public IActionResult UpdateProduct(int productId, [FromBody] UpdateProductDto updateProductDto)
+        public IActionResult UpdateProduct(int productId, [FromForm] UpdateProductDto updateProductDto)
         {
             if (updateProductDto == null)
             {
