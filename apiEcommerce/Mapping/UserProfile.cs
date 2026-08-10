@@ -15,6 +15,7 @@ namespace apiEcommerce.Mapping
             CreateMap<User, UserLoginDTO>().ReverseMap();
             CreateMap<User, UserLoginResponseDTO>().ReverseMap();
             CreateMap<ApplicationUser, UserDataDTO>().ReverseMap();
+            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
         }
     }
 

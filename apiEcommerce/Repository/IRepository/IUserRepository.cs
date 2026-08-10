@@ -7,9 +7,13 @@ namespace apiEcommerce.Repository.IRepository
     {
 
         // Get a list of all users
-        ICollection<User> GetUsers();
+        //   ICollection<User> GetUsers(); old method signature
+        ICollection<ApplicationUser> GetUsers();
+
         // Get a user by ID and return a user
-        User? GetUser(int id);
+        // User? GetUser(int id); Old method signature
+        ApplicationUser? GetUser(String id);
+
         // Get a username and return a bool indicating whether it is unique
         bool IsUniqueUser(string username);
         // Get a UserLoginDto object and return a UserLoginResponseDto

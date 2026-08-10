@@ -35,16 +35,32 @@ namespace apiEcommerce.Repository
         }
 
         //Get a list of all users
-        public ICollection<User> GetUsers()
+
+        //--old method without Identity
+        //public ICollection<User> GetUsers()
+        //{
+        //    //return a list of all users ordered by username
+        //    return _db.Users.OrderBy(u => u.Username).ToList();
+        //}
+
+        public ICollection<ApplicationUser> GetUsers()
         {
             //return a list of all users ordered by username
-            return _db.Users.OrderBy(u => u.Username).ToList();
+            return _db.ApplicationUsers.OrderBy(u => u.UserName).ToList();
         }
 
         //Get a user by id
-        public User? GetUser(int id)
+
+        //--old method whitout Identity
+        //public User? GetUser(int id)
+        //{
+        // return _db.Users.FirstOrDefault(u => u.Id == id);
+        //}
+
+        public ApplicationUser? GetUser(String id)
         {
-            return _db.Users.FirstOrDefault(u => u.Id == id);
+            // return the user with the specified id, or null if no user is found
+            return _db.ApplicationUsers.FirstOrDefault(u => u.Id == id);
         }
 
 
