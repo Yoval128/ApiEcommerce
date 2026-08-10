@@ -37,23 +37,35 @@ namespace apiEcommerce.Controllers
         }
 
         //Endpoint to get a user by id
-        [HttpGet("{id:int}", Name = "GetUser")]
+        //[HttpGet("{id:int}", Name = "GetUser")] old version of the endpoint
+        [HttpGet("{id}", Name = "GetUser")] // new version that implement Indentity
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public IActionResult GetUser(int id)
+        //public IActionResult GetUser(int id)
+        //{
+        //    var user = _userRepository.GetUser(id); // Get the user from the repository by id
+
+        //    if (user == null)
+        //    {
+        //        return NotFound(); // Return a 404 Not Found response if the user does not exist
+        //    }
+
+        //    var userDto = _mapper.Map<List<UserDTO>>(user); // Map the user object to a UserDTO object using AutoMapper
+
+        //    return Ok(userDto);
+        //}
+
+        public IActionResult GetUser(string id)
         {
             var user = _userRepository.GetUser(id); // Get the user from the repository by id
-
             if (user == null)
             {
                 return NotFound(); // Return a 404 Not Found response if the user does not exist
             }
-
-            var userDto = _mapper.Map<List<UserDTO>>(user); // Map the user object to a UserDTO object using AutoMapper
-
+            var userDto = _mapper.Map<UserDTO>(user); // Map the user object to a UserDTO object using AutoMapper
             return Ok(userDto);
         }
 

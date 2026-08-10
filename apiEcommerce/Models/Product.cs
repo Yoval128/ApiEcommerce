@@ -16,7 +16,9 @@ namespace apiEcommerce.Models
         [Column(TypeName = "decimal(18,2)")] // Specify precision and scale for decimal)]
         public decimal Price { get; set; }
 
-        public string imgUrl { get; set; }
+        // public string imgUrl { get; set; } old asignment
+        public string? ImgUrl { get; set; }
+        public string? ImgUrlLocal { get; set; }
 
         [Required]
         public string SKU { get; set; } = string.Empty; // String.Empty to avoid null reference issues

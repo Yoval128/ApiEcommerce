@@ -1,8 +1,10 @@
 using apiEcommerce.Constants;
+using apiEcommerce.Models;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -35,6 +37,10 @@ builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping
     cfg.AddMaps(typeof(Program).Assembly);
 });
 
+// Configure Indetity services for user authentication and authorization
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>()  // Use the ApplicationDbContext for storing user and role information
+.AddDefaultTokenProviders(); // Add default token providers for generating tokens for password reset, email confirmation, etc.
 
 // Get the secret key from the configuration for JWT token validation
 var secretKey = builder.Configuration.GetValue<string>("ApiSettings:SecretKey");
@@ -192,6 +198,8 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
     });
 }
+
+app.UseStaticFiles(); // Enable serving static files from the wwwroot folder
 
 app.UseHttpsRedirection();
 
