@@ -1,5 +1,6 @@
 ﻿using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
+using apiEcommerce.Models.Dtos.Response;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
 using AutoMapper;
@@ -10,7 +11,7 @@ namespace apiEcommerce.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     [ApiVersionNeutral]
     public class ProductsController : ControllerBase
     {
@@ -93,6 +94,50 @@ namespace apiEcommerce.Controllers
             }
             var productDto = _mapper.Map<ProductDto>(product); // Map the category entity to a CategoryDto
             return Ok(productDto);
+        }
+
+
+        //Endpoint to get product by Page
+        [AllowAnonymous]
+        [HttpGet("Paged", Name = "GetProductInPage")]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Successful response with category data
+        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Bad request response if the id is invalid
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Forbidden response if the user does not have permission
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // Not found response if the category does not exist
+
+        public IActionResult GetProductInPage([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
+        {
+            // validate if the pageNumber and pageSize are greater than zero
+            if (pageNumber < 1 || pageSize < 1)
+            {
+                return BadRequest("El número de página y el tamaño de página deben ser mayores a cero");
+            }
+
+            var totalProducts = _productRepository.GetProducts().Count; // Get the total number of products
+
+            var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize); // Calculate the total number of pages as int
+
+            // validate if the pageNumber is greater than the total number of pages
+            if (pageNumber > totalPages)
+            {
+                return NotFound($"La página {pageNumber} no existe. El número total de páginas es {totalPages}");
+            }
+
+            var product = _productRepository.GetProductsInPage(pageNumber, pageSize); // Retrieve the category with the pageNumber and pageSize from the repository
+
+            var productDto = _mapper.Map<List<ProductDto>>(product); // Map the category entity to a ProductDto
+            var paginationResponse = new PaginationResponse<ProductDto>
+            {
+
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages,
+                Items = productDto,
+            };
+
+            return Ok(paginationResponse);
+
+
         }
 
         //Endpoint to create a new product

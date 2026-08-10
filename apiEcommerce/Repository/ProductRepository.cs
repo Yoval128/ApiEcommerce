@@ -108,6 +108,19 @@ namespace apiEcommerce.Repository
             return _db.Products.Include(p => p.Category).OrderBy(p => p.Name).ToList();
         }
 
+        public ICollection<Product> GetProductsInPage(int pageNumber, int pageSize)
+        {
+            return _db.Products.OrderBy(p => p.ProductId) // Order the products by ProductId to ensure consistent paging
+                .Skip((pageNumber - 1) * pageSize) // Skip the products from previous pages
+                .Take(pageSize) // Take the products for the current page
+                .ToList(); // Convert the result to a list and return it
+        }
+
+        public int GetTotalProducts()
+        {
+            return _db.Products.Count(); // Return the total number of products in the database
+        }
+
         public bool ProductExists(int id)
         {
             if (id <= 0)

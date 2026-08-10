@@ -1,4 +1,5 @@
 using apiEcommerce.Constants;
+using apiEcommerce.Data;
 using apiEcommerce.Models;
 using apiEcommerce.Repository;
 using apiEcommerce.Repository.IRepository;
@@ -18,7 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Get the connection string from the configuration and register the ApplicationDbContext
 // with the dependency injection container
 var dbConnectionString = builder.Configuration.GetConnectionString("ConexionSql");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConnectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(dbConnectionString)
+  // Use the UseSeeding extension method to seed the database with initial data
+  .UseSeeding((context, _) =>
+  {
+      var appContext = (ApplicationDbContext)context; // Cast the context to ApplicationDbContext
+      DataSeeder.SeedData(appContext); // Call the SeedData method to seed the database with initial data
+  })
+);
 
 builder.Services.AddResponseCaching(options =>
 {
@@ -32,7 +41,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Register
 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // Register the user repository with the dependency injection container
 
-builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping profiles from the assembly
+builder.Services.AddAutoMapper(cfg => // Register Autols
+                                      // Mapper and add the mapping profiles from the assembly
 {
     cfg.AddMaps(typeof(Program).Assembly);
 });

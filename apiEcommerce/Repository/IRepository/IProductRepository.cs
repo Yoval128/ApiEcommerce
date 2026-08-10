@@ -6,6 +6,13 @@ namespace apiEcommerce.Repository.IRepository
     {
         // Get list of all products
         ICollection<Product> GetProducts();
+
+        // Get list of products in a specific page
+        ICollection<Product> GetProductsInPage(int pageNumber, int pageSize);
+
+        // Get the total number of products
+        int GetTotalProducts();
+
         // Get a category by id and return all the products in that category
         ICollection<Product> GetProductForCategory(int categoryId);
 
