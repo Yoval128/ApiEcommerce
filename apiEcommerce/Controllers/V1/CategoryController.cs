@@ -12,7 +12,7 @@ namespace apiEcommerce.Controllers.V1
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     // [EnableCors("AllowSpecificOrigins")]
     // [EnableCors(PolicyNames.AllowSpecificOrigin)]
     public class CategoryController : ControllerBase
