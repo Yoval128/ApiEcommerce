@@ -1,7 +1,7 @@
 ﻿using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,15 +23,13 @@ namespace apiEcommerce.Repository
         private string? secretKey; // Declare a private field to store the secret key for JWT token generation
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _rolMannager;
-        private readonly IMapper _mapper;
         public UserRepository(ApplicationDbContext db, IConfiguration configuration,
-            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
+            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _db = db;
             secretKey = configuration.GetValue<string>("ApiSettings:SecretKey");
             _userManager = userManager;
             _rolMannager = roleManager;
-            _mapper = mapper;
         }
 
         //Get a list of all users
@@ -187,7 +185,7 @@ namespace apiEcommerce.Repository
                 //    Role = user.Role,
                 //    Password = user.Password ?? "",
                 //},
-                User = _mapper.Map<UserDataDTO>(user), // Use AutoMapper to map the ApplicationUser object to a UserRegisterDTO object
+                User = user.Adapt<UserDataDTO>(), // Use Mapster to map the ApplicationUser object to a UserRegisterDTO object
                 Message = "Login successful",
             };
         }
@@ -260,7 +258,7 @@ namespace apiEcommerce.Repository
                 await _userManager.AddToRoleAsync(user, userRole); // Assign the role to the user using the UserManager's AddToRoleAsync method
 
                 var createdUser = _db.ApplicationUsers.FirstOrDefault(u => u.UserName == createUserDTO.Username); // Retrieve the created user from the database
-                return _mapper.Map<UserDataDTO>(createdUser); // Use AutoMapper to map the ApplicationUser object to a UserDataDTO object and return it
+                return createdUser.Adapt<UserDataDTO>(); // Use Mapster to map the ApplicationUser object to a UserDataDTO object and return it
             }
             var errors = string.Join(", ", result.Errors.Select(e => e.Description));
             throw new ApplicationException($"No se puedo completar el registro: {errors} ");
