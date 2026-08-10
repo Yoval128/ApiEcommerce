@@ -1,4 +1,4 @@
-using apiEcommerce.Models;
+﻿using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using Mapster;
 
@@ -26,7 +26,20 @@ namespace apiEcommerce.Mapping
             config.NewConfig<User, UserLoginDTO>().TwoWays();
             config.NewConfig<User, UserLoginResponseDTO>().TwoWays();
             config.NewConfig<ApplicationUser, UserDataDTO>().TwoWays();
-            config.NewConfig<ApplicationUser, UserDTO>().TwoWays();
+
+            // ApplicationUser mappings
+            // Mapster does not automatically map UserName → Username because the property names are different.
+            // These explicit mappings ensure that Identity's UserName is correctly mapped to the DTO's Username.
+            // TwoWays() also enables the reverse mapping: Username → UserName.
+
+            config.NewConfig<ApplicationUser, UserDataDTO>()
+                .Map(dest => dest.Username, src => src.UserName)
+                .TwoWays();
+
+            config.NewConfig<ApplicationUser, UserDTO>()
+                .Map(dest => dest.Username, src => src.UserName)
+                .TwoWays();
+
         }
     }
 }
