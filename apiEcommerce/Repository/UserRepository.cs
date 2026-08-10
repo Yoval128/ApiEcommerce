@@ -262,7 +262,8 @@ namespace apiEcommerce.Repository
                 var createdUser = _db.ApplicationUsers.FirstOrDefault(u => u.UserName == createUserDTO.Username); // Retrieve the created user from the database
                 return _mapper.Map<UserDataDTO>(createdUser); // Use AutoMapper to map the ApplicationUser object to a UserDataDTO object and return it
             }
-            throw new ApplicationException("No se puedo completar el registro");
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new ApplicationException($"No se puedo completar el registro: {errors} ");
 
         }
         //Get a username and return a bool indicating whether it is unique
