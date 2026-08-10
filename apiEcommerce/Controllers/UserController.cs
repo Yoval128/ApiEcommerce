@@ -1,7 +1,7 @@
 ﻿using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +14,10 @@ namespace apiEcommerce.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
 
-        public UserController(IUserRepository userReprository, IMapper mapper)
+        public UserController(IUserRepository userReprository)
         {
             _userRepository = userReprository;
-            _mapper = mapper;
         }
 
 
@@ -31,7 +29,7 @@ namespace apiEcommerce.Controllers
         public IActionResult GetUsers()
         {
             var users = _userRepository.GetUsers(); //Get all user from the repository (database)
-            var usersDto = _mapper.Map<List<UserDTO>>(users); // Take the list of users and map it to a list of UserDTO objects using AutoMapper
+            var usersDto = users.Adapt<List<UserDTO>>(); // Map users to DTOs using Mapster
 
             return Ok(usersDto); // Return a 200 OK response with the list of UserDTO objects
         }
@@ -65,7 +63,7 @@ namespace apiEcommerce.Controllers
             {
                 return NotFound(); // Return a 404 Not Found response if the user does not exist
             }
-            var userDto = _mapper.Map<UserDTO>(user); // Map the user object to a UserDTO object using AutoMapper
+            var userDto = user.Adapt<UserDTO>(); // Map the user object to a UserDTO object using Mapster
             return Ok(userDto);
         }
 

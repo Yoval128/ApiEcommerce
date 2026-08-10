@@ -3,7 +3,7 @@ using apiEcommerce.Models;
 using apiEcommerce.Models.Dtos;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,14 +21,10 @@ namespace apiEcommerce.Controllers.V1
         // Repository for category data access
         private readonly ICategoryRepository _categoryRepository;
 
-        // Mapper to map between DTOs and entities
-        private readonly IMapper _mapper;
-
         // Constructor
-        public CategoryController(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
-            _mapper = mapper;
         }
 
         // Endpoint to get all categories
@@ -47,7 +43,7 @@ namespace apiEcommerce.Controllers.V1
             // Map each category entity to a CategoryDto and add it to the list
             foreach (var category in categories)
             {
-                categoriesDto.Add(_mapper.Map<CategoryDto>(category)); // Add each category DTO to the list
+                categoriesDto.Add(category.Adapt<CategoryDto>());
             }
 
             return Ok(categoriesDto);
@@ -74,7 +70,7 @@ namespace apiEcommerce.Controllers.V1
             {
                 return NotFound($"La categoria con el id {id} no existe"); // Return a 404 Not Found response if the category does not exist
             }
-            var categoriesDto = _mapper.Map<CategoryDto>(categories); // Map the category entity to a CategoryDto
+            var categoriesDto = categories.Adapt<CategoryDto>(); // Map the category entity to a CategoryDto
 
             return Ok(categoriesDto);
         }
@@ -103,7 +99,7 @@ namespace apiEcommerce.Controllers.V1
             }
 
             // create var category entity from the CreateCategoryDto using AutoMapper
-            var category = _mapper.Map<Category>(createCategoryDto); // Map the CreateCategoryDto to a Category entity
+            var category = createCategoryDto.Adapt<Category>(); // Map the CreateCategoryDto to a Category entity
 
             // Validate the model state after mapping
             if (!_categoryRepository.CreateCategory(category))
@@ -144,7 +140,7 @@ namespace apiEcommerce.Controllers.V1
             }
 
             // create var category entity from the CreateCategoryDto using AutoMapper
-            var category = _mapper.Map<Category>(updateCategoryDto); // Map the CreateCategoryDto to a Category entity
+            var category = updateCategoryDto.Adapt<Category>(); // Map the CreateCategoryDto to a Category entity
 
             category.Id = id; // Set the category Id to the id from the route
 

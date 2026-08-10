@@ -3,7 +3,7 @@ using apiEcommerce.Models.Dtos;
 using apiEcommerce.Models.Dtos.Response;
 using apiEcommerce.Repository.IRepository;
 using Asp.Versioning;
-using AutoMapper;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +18,6 @@ namespace apiEcommerce.Controllers
 
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
-        private readonly IMapper _mapper;
 
         private void UploadProductImage(dynamic productDto, Product product)
         {
@@ -56,10 +55,9 @@ namespace apiEcommerce.Controllers
             product.ImgUrlLocal = filePath; // Set the ImgUrlLocal property of the product to the local file path of the image
         }
 
-        public ProductsController(IProductRepository productRepository, IMapper mapper, ICategoryRepository categoryRepository)
+        public ProductsController(IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
-            _mapper = mapper;
             _categoryRepository = categoryRepository;
         }
 
@@ -73,7 +71,7 @@ namespace apiEcommerce.Controllers
         public IActionResult GetProducts()
         {
             var products = _productRepository.GetProducts();
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
             return Ok(productsDto);
         }
 
@@ -92,7 +90,7 @@ namespace apiEcommerce.Controllers
             {
                 return NotFound($"El producto con el id {productId} no existe"); // Return a 404 Not Found response if the category does not exist
             }
-            var productDto = _mapper.Map<ProductDto>(product); // Map the category entity to a CategoryDto
+            var productDto = product.Adapt<ProductDto>(); // Map the category entity to a CategoryDto
             return Ok(productDto);
         }
 
@@ -117,7 +115,7 @@ namespace apiEcommerce.Controllers
 
             var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize); // Calculate the total number of pages as int
 
-            // validate if the pageNumber is greater than the total number of pages
+            // validate if thLSe pageNumber is greater than the total number of pages
             if (pageNumber > totalPages)
             {
                 return NotFound($"La página {pageNumber} no existe. El número total de páginas es {totalPages}");
@@ -125,7 +123,7 @@ namespace apiEcommerce.Controllers
 
             var product = _productRepository.GetProductsInPage(pageNumber, pageSize); // Retrieve the category with the pageNumber and pageSize from the repository
 
-            var productDto = _mapper.Map<List<ProductDto>>(product); // Map the category entity to a ProductDto
+            var productDto = product.Adapt<List<ProductDto>>(); // Map the category entity to a ProductDto
             var paginationResponse = new PaginationResponse<ProductDto>
             {
 
@@ -165,7 +163,7 @@ namespace apiEcommerce.Controllers
                 ModelState.AddModelError("CustomError", $"La categoría con el {createProductDto.CategoryId} no existe");
                 return BadRequest(ModelState);
             }
-            var product = _mapper.Map<Product>(createProductDto);
+            var product = createProductDto.Adapt<Product>();
 
             // validate if the image is not null, then save it to the server and set the ImgUrl property of the product
             if (createProductDto.Image != null)
@@ -183,7 +181,7 @@ namespace apiEcommerce.Controllers
                 return StatusCode(500, ModelState);
             }
             var createdProduct = _productRepository.GetProduct(product.ProductId);
-            var productoDto = _mapper.Map<ProductDto>(createdProduct);
+            var productoDto = createdProduct.Adapt<ProductDto>();
             return CreatedAtRoute("GetProduct", new
             {
                 productId = product.ProductId
@@ -204,7 +202,7 @@ namespace apiEcommerce.Controllers
             {
                 return NotFound($"Los productos con la categoría {categoryId} no existen");
             }
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
             return Ok(productsDto);
         }
 
@@ -223,7 +221,7 @@ namespace apiEcommerce.Controllers
             {
                 return NotFound($"El producto con el nombre '{searchTerm}' no existe");
             }
-            var productsDto = _mapper.Map<List<ProductDto>>(products);
+            var productsDto = products.Adapt<List<ProductDto>>();
             return Ok(productsDto);
         }
 
@@ -283,7 +281,7 @@ namespace apiEcommerce.Controllers
                 ModelState.AddModelError("CustomError", $"La categoría con el {updateProductDto.CategoryId} no existe");
                 return BadRequest(ModelState);
             }
-            var product = _mapper.Map<Product>(updateProductDto);
+            var product = updateProductDto.Adapt<Product>();
             product.ProductId = productId;
 
             // validate if the image is not null, then save it to the server and set the ImgUrl property of the product

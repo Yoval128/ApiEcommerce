@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Mapster;
 using System.Text;
 
 
@@ -41,11 +42,10 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Register
 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // Register the user repository with the dependency injection container
 
-builder.Services.AddAutoMapper(cfg => // Register Autols
-                                      // Mapper and add the mapping profiles from the assembly
-{
-    cfg.AddMaps(typeof(Program).Assembly);
-});
+// Configure Mapster mappings and register Mapster mapper
+// The Mapster configuration is centralized in Mapping.MapsterConfiguration
+var mapsterConfig = TypeAdapterConfig.GlobalSettings;
+apiEcommerce.Mapping.MapsterConfiguration.Configure(mapsterConfig);
 
 // Configure Indetity services for user authentication and authorization
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
