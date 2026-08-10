@@ -41,7 +41,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>(); // Register
 
 builder.Services.AddScoped<IUserRepository, UserRepository>(); // Register the user repository with the dependency injection container
 
-builder.Services.AddAutoMapper(cfg => // Register AutoMapper and add the mapping profiles from the assembly
+builder.Services.AddAutoMapper(cfg => // Register Autols
+                                      // Mapper and add the mapping profiles from the assembly
 {
     cfg.AddMaps(typeof(Program).Assembly);
 });
